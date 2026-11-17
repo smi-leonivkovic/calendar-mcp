@@ -21,8 +21,9 @@ class Server {
     
     func run() async {
         while true {
-            guard let data = try? FileHandle.standardInput.read(upToCount: 4096),
-                  !data.isEmpty else {
+            // availableData returns as soon as any bytes arrive; read(upToCount:) blocks until 4096 bytes or EOF
+            let data = FileHandle.standardInput.availableData
+            guard !data.isEmpty else {
                 break
             }
             
