@@ -918,11 +918,9 @@ class Server {
     private func sendJSON(_ object: [String: Any]) {
         guard let data = try? JSONSerialization.data(withJSONObject: object) else { return }
         
-        let header = "Content-Length: \(data.count)\r\n\r\n"
-        guard let headerData = header.data(using: .utf8) else { return }
-        
-        FileHandle.standardOutput.write(headerData)
+        // MCP stdio transport: newline-delimited JSON (Claude Code/Desktop reject Content-Length framing)
         FileHandle.standardOutput.write(data)
+        FileHandle.standardOutput.write(Data([0x0A]))
         fflush(stdout)
     }
     
